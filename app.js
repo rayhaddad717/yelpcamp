@@ -7,7 +7,7 @@ const methodOverride = require('method-override')
 const ejsMate = require('ejs-mate')
 
 const session = require('express-session')
-
+const flash = require('connect-flash')
 const campgrounds = require('./routes/campgrounds');
 const reviews = require('./routes/reviews');
 const ExpressError = require('./utils/ExpressError');
@@ -18,8 +18,7 @@ db.once('open', () => {
     console.log('Database connected')
 })
 
-const app = express()
-const port = 3000;
+const app = express();
 
 //I tell my app to use ejs mate
 app.engine('ejs', ejsMate)
@@ -29,14 +28,9 @@ app.set('views', path.join(__dirname, 'views'))
 
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride('_method'));
-
-app.use('/campgrounds', campgrounds);
-//here id is in the req.params
-app.use('/campgrounds/:id/reviews', reviews);
-
 //send the public folder contents with the response
 app.use(express.static(path.join(__dirname, 'public')))
-
+app.use(flash());
 const sessionConfig = {
     secret: 'thisshouldbeabettersecret',
     resave: false,
@@ -51,6 +45,17 @@ const sessionConfig = {
     }
 }
 app.use(session(sessionConfig))
+app.use((req, res, next) => {
+    //we want our flash messages to be available in all future templates without requiring them
+    res.locals.success = req.flash('success');
+    res.locals.error = req.flash('error');
+    next();
+})
+
+app.use('/campgrounds', campgrounds);
+//here id is in the req.params
+app.use('/campgrounds/:id/reviews', reviews);
+
 
 app.get('/', (req, res) => {
     res.render('home')
@@ -66,5 +71,9 @@ app.use((err, req, res, next) => {
     if (!err.message) { err.message = "Oh No! Something went wrong." }
     res.status(statusCode).render('error', { err })
 })
+
+
+//Start listening
+const port = process.env.Port ? process.env.port : 3000;
 app.listen(port, () =>
     console.log(`listening on port ${port}`))
