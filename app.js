@@ -6,6 +6,8 @@ const methodOverride = require('method-override')
 //I include ejs mate
 const ejsMate = require('ejs-mate')
 
+const session = require('express-session')
+
 const campgrounds = require('./routes/campgrounds');
 const reviews = require('./routes/reviews');
 const ExpressError = require('./utils/ExpressError');
@@ -34,6 +36,21 @@ app.use('/campgrounds/:id/reviews', reviews);
 
 //send the public folder contents with the response
 app.use(express.static(path.join(__dirname, 'public')))
+
+const sessionConfig = {
+    secret: 'thisshouldbeabettersecret',
+    resave: false,
+    saveUninitialized: true,
+    // we will set an expiration date for the cookie
+    cookie: {
+        //date.now() will return the current date in milliseconds
+        //i set the expiry date one week from the current date
+        expires: Date.now() + 1000 * 60 * 60 * 24 * 7,
+        maxAge: 1000 * 60 * 60 * 24 * 7,
+        httpOnly: true
+    }
+}
+app.use(session(sessionConfig))
 
 app.get('/', (req, res) => {
     res.render('home')
