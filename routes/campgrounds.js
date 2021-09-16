@@ -4,6 +4,7 @@ const catchAsync = require('../utils/catchAsync');
 const ExpressError = require('../utils/ExpressError');
 const Campground = require('../models/campground');
 const { campgroundSchema } = require('../schemas');
+const { isLoggedIn } = require('../middleware')
 //validate a campground middleware
 const validateCampground = (req, res, next) => {
     //this is not a mongoose schema, this will validate our data before we even try to save it to mongoose
@@ -25,7 +26,7 @@ router.get('/', catchAsync(async (req, res) => {
 )
 
 //I must put this route ahead of the :id or else it will consider 'new' to be an id
-router.get('/new', (req, res) => {
+router.get('/new', isLoggedIn, (req, res) => {
     res.render('campgrounds/new')
 })
 
@@ -50,7 +51,7 @@ router.get('/:id', catchAsync(async (req, res) => {
     res.render('campgrounds/show', { campground })
 }))
 
-router.get('/:id/edit', catchAsync(async (req, res) => {
+router.get('/:id/edit', isLoggedIn, catchAsync(async (req, res) => {
     const { id } = req.params;
     const campground = await Campground.findById(id);
     if (!campground) {
@@ -60,7 +61,7 @@ router.get('/:id/edit', catchAsync(async (req, res) => {
     res.render('campgrounds/edit', { campground })
 }))
 
-router.put('/:id', validateCampground, catchAsync(async (req, res) => {
+router.put('/:id', isLoggedIn, validateCampground, catchAsync(async (req, res) => {
     const campground = await Campground.findByIdAndUpdate(req.params.id, { ...req.body.campground });
     req.flash('success', 'successfully updated campground');
     res.redirect(`/campgrounds/${campground._id}`)
@@ -68,7 +69,7 @@ router.put('/:id', validateCampground, catchAsync(async (req, res) => {
 }))
 
 //delete a campground
-router.delete('/:id', catchAsync(async (req, res) => {
+router.delete('/:id', isLoggedIn, catchAsync(async (req, res) => {
     const { id } = req.params;
     const deletedCampground = await Campground.findByIdAndDelete(id);
     req.flash('success', 'successfully deleted campground');

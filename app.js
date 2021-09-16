@@ -8,11 +8,16 @@ const ejsMate = require('ejs-mate')
 
 const session = require('express-session')
 const flash = require('connect-flash')
-const campgrounds = require('./routes/campgrounds');
-const reviews = require('./routes/reviews');
 const ExpressError = require('./utils/ExpressError');
 mongoose.connect('mongodb://localhost:27017/yelp-camp')
 const db = mongoose.connection;
+const passport = require('passport');
+const LocalStrategy = require('passport-local');
+const User = require('./models/user');
+const campgroundRoutes = require('./routes/campgrounds');
+const reviewRoutes = require('./routes/reviews');
+const userRoutes = require('./routes/users')
+
 db.on('error', console.error.bind(console, 'connection error'));
 db.once('open', () => {
     console.log('Database connected')
@@ -31,6 +36,8 @@ app.use(methodOverride('_method'));
 //send the public folder contents with the response
 app.use(express.static(path.join(__dirname, 'public')))
 app.use(flash());
+
+
 const sessionConfig = {
     secret: 'thisshouldbeabettersecret',
     resave: false,
@@ -44,17 +51,28 @@ const sessionConfig = {
         httpOnly: true
     }
 }
-app.use(session(sessionConfig))
+app.use(session(sessionConfig));
+app.use(passport.initialize());
+//we should make sure that app.use(passport.sesssion()) comes after app.use(session(...))
+app.use(passport.session());
+//will tell passport how to authenticate a user
+passport.use(new LocalStrategy(User.authenticate()));
+//will tell passport how to store(serialize) and how to unstore a user (deserialize)
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
 app.use((req, res, next) => {
     //we want our flash messages to be available in all future templates without requiring them
     res.locals.success = req.flash('success');
     res.locals.error = req.flash('error');
+    //now in all my templates i will have access to my current logged in user (not logged in=undefined)
+    res.locals.currentUser = req.user;
     next();
 })
 
-app.use('/campgrounds', campgrounds);
+app.use('/', userRoutes);
+app.use('/campgrounds', campgroundRoutes);
 //here id is in the req.params
-app.use('/campgrounds/:id/reviews', reviews);
+app.use('/campgrounds/:id/reviews', reviewRoutes);
 
 
 app.get('/', (req, res) => {
