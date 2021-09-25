@@ -7,7 +7,7 @@
 
             <!-- add class validated-form (custom name) to the form
             add attribute novalidate so that the browser won't validate our inputs -->
-            <form action="/campgrounds" method="POST" novalidate class="validated-form">
+            <form action="/campgrounds" method="POST" novalidate class="validated-form" enctype="multipart/form-data">
                 <div class="mb-3">
                     <label class="form-label" for="title">Title</label>
                     <!-- Add the required attribute for the input -->
@@ -21,13 +21,6 @@
                 <div class="mb-3">
                     <label class="form-label" for="location">Location</label>
                     <input class="form-control" type="text" id="location" name="campground[location]" required>
-                    <div class="valid-feedback">
-                        Looks Good!
-                    </div>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label" for="image">image url</label>
-                    <input class="form-control" type="text" id="image" name="campground[image]" required>
                     <div class="valid-feedback">
                         Looks Good!
                     </div>
@@ -48,6 +41,10 @@
                     <div class="valid-feedback">
                         Looks Good!
                     </div>
+                </div>
+                <div class="input-group mb-3 ">
+                    <input type="file" class="form-control" id="image" name="image" multiple>
+                    <label class="input-group-text " for="image">Browse</label>
                 </div>
                 <div class="mb-3">
                     <button class="btn btn-success" type="submit">Add campground</button>

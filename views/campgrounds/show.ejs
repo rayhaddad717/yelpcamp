@@ -2,8 +2,30 @@
     <link rel="stylesheet" href="/stylesheets/stars.css">
     <div class="row">
         <div class="col-6 ">
+            <div id="campgroundCarousel" class="carousel slide" data-bs-ride="carousel">
+                <div class="carousel-inner">
+                    <%campground.images.forEach((img,i)=>{%>
+                        <!-- i only want the active attribute on the first image -->
+                        <div class="carousel-item <%= i===0 ? 'active' : '' %> ">
+                            <img src=<%=img.url %> class="d-block w-100" >
+                        </div>
+                        <% }) %>
+                </div>
+                <!-- i only want to show prev and next buttons if i have more than i image -->
+                <% if(campground.images.length>1) {%>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#campgroundCarousel"
+                        data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#campgroundCarousel"
+                        data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                    </button>
+                    <% } %>
+            </div>
             <div class="card mb-3">
-                <img src="<%= campground.image%>" width="50%" class="card-img-top" alt="...">
                 <div class="card-body">
                     <h5 class="card-title">
                         <%= campground.title %>
@@ -22,7 +44,8 @@
                 </ul>
                 <% if(currentUser && campground.author.equals(currentUser._id)) {%>
                     <div class="card-body">
-                        <a class="btn btn-info" href="/campgrounds/<%= campground._id %>/edit ">Edit Campground</a>
+                        <a class="btn btn-info" href="/campgrounds/<%= campground._id %>/edit ">Edit
+                            Campground</a>
                         <form class="d-inline" action="/campgrounds/<%= campground._id %>?_method=DELETE "
                             method="POST">
                             <button class="btn btn-danger">Delete
