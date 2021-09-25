@@ -14,9 +14,18 @@ const ejsMate = require('ejs-mate')
 const session = require('express-session')
 const flash = require('connect-flash')
 const ExpressError = require('./utils/ExpressError');
-//mongoose.connect('mongodb://localhost:27017/yelp-camp');
-const connectionString = `mongodb+srv://ray:${process.env.mongoPassword}@cluster0.ugkjk.mongodb.net/yelp-camp?retryWrites=true&w=majority`;
-mongoose.connect(connectionString)
+if (process.PORT) {
+    //mongo atlas db
+    const connectionString = `mongodb+srv://ray:${process.env.mongoPassword}@cluster0.ugkjk.mongodb.net/
+    yelp-camp?retryWrites=true&w=majority`;
+    mongoose.connect(connectionString);
+
+} else {
+    //local dev
+    mongoose.connect('mongodb://localhost:27017/yelp-camp');
+}
+
+
 const db = mongoose.connection;
 const passport = require('passport');
 const LocalStrategy = require('passport-local');

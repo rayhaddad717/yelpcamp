@@ -3,7 +3,13 @@ const cities = require('./cities')
 const Campground = require('../models/campground');
 const { places, descriptors } = require('./seedHelpers')
 
-mongoose.connect('mongodb://localhost:27017/yelp-camp')
+//local db
+//mongoose.connect('mongodb://localhost:27017/yelp-camp');
+
+//mongo atlas db
+const connectionString = `mongodb+srv://ray:${process.env.mongoPassword}@cluster0.ugkjk.mongodb.net/
+yelp-camp?retryWrites=true&w=majority`;
+mongoose.connect(connectionString);
 
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error'));
@@ -54,6 +60,7 @@ const seedDB = async () => {
         })
         await camp.save();
     }
+    console.log('finished')
 }
 //seedDB returns a promise since it is an async function
 // we want to close the connection when we're done
