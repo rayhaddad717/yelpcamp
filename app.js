@@ -14,7 +14,7 @@ const ejsMate = require('ejs-mate')
 const session = require('express-session')
 const flash = require('connect-flash')
 const ExpressError = require('./utils/ExpressError');
-if (process.PORT) {
+if (process.env.PORT) {
     //mongo atlas db
     const connectionString = `mongodb+srv://ray:${process.env.mongoPassword}@cluster0.ugkjk.mongodb.net/
     yelp-camp?retryWrites=true&w=majority`;
