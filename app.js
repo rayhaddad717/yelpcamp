@@ -14,7 +14,9 @@ const ejsMate = require('ejs-mate')
 const session = require('express-session')
 const flash = require('connect-flash')
 const ExpressError = require('./utils/ExpressError');
-mongoose.connect('mongodb://localhost:27017/yelp-camp')
+//mongoose.connect('mongodb://localhost:27017/yelp-camp');
+const connectionString = `mongodb+srv://ray:${process.env.mongoPassword}@cluster0.ugkjk.mongodb.net/yelp-camp?retryWrites=true&w=majority`;
+mongoose.connect(connectionString)
 const db = mongoose.connection;
 const passport = require('passport');
 const LocalStrategy = require('passport-local');
