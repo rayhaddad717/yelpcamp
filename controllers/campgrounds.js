@@ -7,7 +7,6 @@ const geocoder = mbxGeocoding({ accessToken: mapboxToken });
 module.exports.index = async (req, res) => {
     //get all the campgrounds from the database and pass them to campgrounds/index to render them on the page
     const campgrounds = await Campground.find({})
-    console.log(campgrounds[0].images[0].url)
     res.render('campgrounds/index', { campgrounds })
 };
 
@@ -30,7 +29,6 @@ module.exports.createCampground = async (req, res, next) => {
     campground.images = req.files.map(f => ({ url: f.path, filename: f.filename }))
     campground.author = req.user._id;
     await campground.save();
-    console.log(campground);
     req.flash('success', 'Sucessfully created a new campground!');
     //campground will automatically update its id
     res.redirect(`/campgrounds/${campground._id}`)
@@ -69,7 +67,6 @@ module.exports.renderEditForm = async (req, res) => {
 //for '/:id' put
 module.exports.updateCampground = async (req, res) => {
     const { id } = req.params;
-    console.log(req.body);
     const campground = await Campground.findByIdAndUpdate(req.params.id, { ...req.body.campground });
     const images = req.files.map(f => ({ url: f.path, filename: f.filename }));
     campground.images.push(...images);
