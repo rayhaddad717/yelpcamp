@@ -1,4 +1,0 @@
-@echo off
-cd "C:\Users\raygh\Downloads\TaskbarX_1.7.0.0_x64"
-start TaskbarX.exe -stop
-exit

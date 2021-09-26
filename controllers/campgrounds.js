@@ -7,6 +7,7 @@ const geocoder = mbxGeocoding({ accessToken: mapboxToken });
 module.exports.index = async (req, res) => {
     //get all the campgrounds from the database and pass them to campgrounds/index to render them on the page
     const campgrounds = await Campground.find({})
+    console.log(campgrounds[0].images[0].url)
     res.render('campgrounds/index', { campgrounds })
 };
 
