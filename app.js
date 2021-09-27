@@ -35,7 +35,7 @@ const reviewRoutes = require('./routes/reviews');
 const userRoutes = require('./routes/users')
 const mongoSanitize = require('express-mongo-sanitize');
 const helmet = require('helmet');
-
+const MongoDBStore = require('connect-mongo');
 
 db.on('error', console.error.bind(console, 'connection error'));
 db.once('open', () => {
@@ -105,10 +105,22 @@ app.use(
     })
 );
 
-
+const MongoDBStore = require('connect-mongo');
+//create a store in mongodb to store the sessions
+const secret = process.env.SECRET;
+const store = MongoDBStore.create({
+    mongoUrl: connectionString,
+    secret,
+    touchAfter: 24 * 3600
+})
+store.on('error', function (e) {
+    console.log('session store error', e)
+})
 const sessionConfig = {
     name: 'bonus',
-    secret: 'thisshouldbeabettersecret',
+    //add the store
+    store,
+    secret,
     resave: false,
     saveUninitialized: true,
     // we will set an expiration date for the cookie
