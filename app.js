@@ -105,7 +105,6 @@ app.use(
     })
 );
 
-const MongoDBStore = require('connect-mongo');
 //create a store in mongodb to store the sessions
 const secret = process.env.SECRET;
 const store = MongoDBStore.create({
